@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "Top 10 Covid-19 Cases";
+}
+
+@section scripts
+    {
+    <script type="text/javascript">
+        var grid = $('#resultsGrid');
+        var cases = $('#results');
+
+        $(document).ready(function () {
+            
+            $.ajax({
+                "url": "Home/GetResults",
+                "type": "POST",
+                "contentType": "application/json charset=utf-8",
+                success: function (data) {
+                    var results = data.regions;
+
+                    var s = '<option value="-1">Region</option>';
+                    for (var i = 0; i < results.length; i++) {
+                        s += '<option value="' + results[i].Code + '">' + results[i].Name + '</option>';
+                    }
+
+                    cases.html(s);
+
+                    grid.DataTable({
+                        "paging": false,
+                        "data": data.data,
+                        "columns": [
+                            { "data": "Name" },
+                            { "data": "ConfirmedCases" },
+                            { "data": "DeathCases" }
+                        ],
+                        "order": [[1, "desc"]]
+                    });
+                }
+            });
+
+           
+        });
+
+        $('#results').on('change', function () {
+            $.ajax({
+                "url": "Home/GetResultsByProvince",
+                "type": "POST",
+                "contentType": "application/json charset=utf-8",
+                "data": JSON.stringify({ isoCode: this.value}),
+                success: function (data) {
+                    
+                    grid.dataTable.rows.add(data.data);
+                    
+                    
+                }
+            });
+        });
+    </script>
+}
+
+<div class="row">
+    <select id="results"></select>
+</div>
+    <div class="row">
+        <div class="col-md-4">
+            <table id="resultsGrid" class="display nowrap" style="width:60%">
+                <thead>
+                    <tr>
+                        <th>Region</th>
+                        <th>Cases</th>
+                        <th>Deaths</th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+
+    </div>

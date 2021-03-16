@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "7e648059-a8ac-40be-823c-34194120dbf0",
+		"name": "TopTen",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "RptByRegionsGroupByIsoCountry",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \r\n        \"TotalResults\" : 10,\r\n        \"Protocol\" : \"https://\",\r\n        \"Host\" :\"covid-19-statistics.p.rapidapi.com\",\r\n        \"Key\" : \"986f4e3cecmsh3a8392b90cc0522p1c4047jsnd2bccb165147\",\r\n        \"Method\" : \"/reports\"\r\n    }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44362/Regions/RptByRegions",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44362",
+					"path": [
+						"Regions",
+						"RptByRegions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RptByRegionsProvinces",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"IsoCode\" : \"CHN\",\r\n        \"TotalResults\" : 10,\r\n        \"Protocol\" : \"https://\",\r\n        \"Host\" :\"covid-19-statistics.p.rapidapi.com\",\r\n        \"Key\" : \"986f4e3cecmsh3a8392b90cc0522p1c4047jsnd2bccb165147\",\r\n        \"Method\" : \"/reports\"\r\n    }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44362/Regions/RptByRegions",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44362",
+					"path": [
+						"Regions",
+						"RptByRegions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
