@@ -15,7 +15,10 @@ namespace Top10Covid19
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/DataTables/jquery.dataTables.*",
-                        "~/scripts/bootstrap.*"));
+                        "~/Scripts/DataTables/dataTables.buttons.js",
+                        "~/Scripts/DataTables/buttons.html5.js",
+                        "~/Scripts/DataTables/buttons.print.js",
+                        "~/scripts/bootstrap.*")) ;
             /* bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                          "~/Scripts/jquery-{version}.js"));
 
@@ -37,7 +40,8 @@ namespace Top10Covid19
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/DataTables/css/jquery.dataTables.css"));
+                      "~/Content/DataTables/css/jquery.dataTables.css",
+                      "~/Content/DataTables/css/buttons.dataTables.css"));
 
             
 

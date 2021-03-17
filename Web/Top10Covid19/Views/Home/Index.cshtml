@@ -4,14 +4,16 @@
 
 @section scripts
     {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" type="text/javascript"></script>
+    <script src="https://www.utilities-online.info/assets/js/xmltojson.js" type="text/javascript"></script>
     <script type="text/javascript">
         var grid = $('#resultsGrid');
         var cases = $('#results');
 
         $(document).ready(function () {
-            
+
             $.ajax({
-                "url": "Home/GetResults",
+                "url": "@Url.Action("GetResults", "Home")", 
                 "type": "POST",
                 "contentType": "application/json charset=utf-8",
                 success: function (data) {
@@ -25,8 +27,60 @@
                     cases.html(s);
 
                     grid.DataTable({
+                        "dom": "Bfrtip",
                         "paging": false,
+                        "buttons": [
+                            {
+                                extend: 'collection',
+                                text: 'Export',
+                                buttons: [
+                                    {
+                                        extend: 'csvHtml5',
+                                        text: 'CSV'
+                                    },
+                                    {
+                                        text: 'XML',
+                                        action: function (e, dt, button, config) {
+                                            var resultsGrid = tableToJSON(grid);
+
+                                            $.ajax({
+                                                "url": "@Url.Action("JsonToXml", "Home")",
+                                                "type": "POST",
+                                                "contentType": "application/json charset=utf-8",
+                                                "data":
+                                                    JSON.stringify({ data: "{data:" + JSON.stringify(resultsGrid) + "}" })
+                                                ,
+                                                success: function (results) {
+
+                                                    var w = window.open('about:blank', 'windowname');
+                                                        w.document.write(results);
+                                                        w.document.close();
+
+                                                    $.fn.dataTable.fileSave(
+                                                        results,
+                                                        'Export.xml'
+                                                    );
+
+                                                }
+                                            });
+                                        }
+                                    },
+                                    {
+                                        text: 'JSON',
+                                        action: function (e, dt, button, config) {
+                                            var data = dt.buttons.exportData();
+
+                                            $.fn.dataTable.fileSave(
+                                                new Blob([JSON.stringify(data)]),
+                                                'Export.json'
+                                            );
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
                         "data": data.data,
+
                         "columns": [
                             { "data": "Name" },
                             { "data": "ConfirmedCases" },
@@ -37,41 +91,84 @@
                 }
             });
 
-           
+
+
         });
 
         $('#results').on('change', function () {
-            $.ajax({
-                "url": "Home/GetResultsByProvince",
-                "type": "POST",
-                "contentType": "application/json charset=utf-8",
-                "data": JSON.stringify({ isoCode: this.value}),
-                success: function (data) {
-                    
-                    grid.dataTable.rows.add(data.data);
-                    
-                    
-                }
-            });
+            var value = this.value;
+            var dt = grid.DataTable();
+            if (value == "-1") {
+                $.ajax({
+                    "url": "@Url.Action("GetResults", "Home")", 
+                    "type": "POST",
+                    "contentType": "application/json charset=utf-8",
+                    success: function (data) {
+                        var d = data.data;
+
+                        dt.clear().draw();
+                        dt.rows.add(d);
+                        dt.columns.adjust().draw();
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    "url": "@Url.Action("GetResults", "Home")",
+                    "type": "POST",
+                    "contentType": "application/json charset=utf-8",
+                    "data": JSON.stringify({ isoCode: this.value }),
+                    success: function (data) {
+                        var d = data.data;
+
+                        dt.clear().draw();
+                        dt.rows.add(d);
+                        dt.columns.adjust().draw();
+
+                    }
+                });
+            }
+
+
         });
+
+        function tableToJSON(tblObj) {
+            var data = [];
+            var $headers = $(tblObj).find("th");
+            var $rows = $(tblObj).find("tbody tr").each(function (index) {
+                $cells = $(this).find("td");
+                data[index] = {};
+                $cells.each(function (cellIndex) {
+                    data[index][$($headers[cellIndex]).html()] = $(this).html();
+                });
+            });
+            return data;
+        }
+
     </script>
 }
 
 <div class="row">
-    <select id="results"></select>
-</div>
-    <div class="row">
-        <div class="col-md-4">
-            <table id="resultsGrid" class="display nowrap" style="width:60%">
-                <thead>
-                    <tr>
-                        <th>Region</th>
-                        <th>Cases</th>
-                        <th>Deaths</th>
-                    </tr>
-                </thead>
-
-            </table>
-        </div>
-
+    <div class="col-md-4">
+        Top 10 - Covid cases
     </div>
+    <br />
+    <div class="col-md-4">
+        Region : <select id="results"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <table id="resultsGrid" class="display nowrap" style="width:60%">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Cases</th>
+                    <th>Deaths</th>
+                </tr>
+            </thead>
+
+        </table>
+    </div>
+
+</div>

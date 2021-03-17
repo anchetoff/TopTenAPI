@@ -20,6 +20,7 @@ Configs defined in Top10Covid19
 1.4 Server ("covid-19-statistics.p.rapidapi.com") defined in definition covid-19-statistics API
 
 Main project is Top10Covid19, UI interface (grid defined, searchs and data export formats), complementary is created a project named TopTenService assigned to a Client for TopTenAPI. 
+When project is lanuched please verify starts in path: https://localhost:44321/
 
 - Unit test
 -   Created two choices:

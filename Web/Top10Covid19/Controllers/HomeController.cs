@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
+using System.Xml.Linq;
+using Newtonsoft.Json;
 using Top10Covid19.Models;
 using TopTenService.Client;
 using TopTenService.Client.Implementation;
@@ -45,12 +48,13 @@ namespace Top10Covid19.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetResults()
+        public JsonResult GetResults(string isoCode)
         {
             TopTenRequest request = new TopTenRequest(settings.GetKey("protocolCovid19API"), settings.GetKey("hostCovid19API"),
                                                       settings.GetKey("methodCovid19API"), settings.GetKey("ApiKeyCovid19API"));
             request.TotalResults = 10;
-            //request.IsoCode = 
+            
+            if(!string.IsNullOrEmpty(isoCode))request.IsoCode = isoCode; //This parameter is used to get provinces values, otherwise will load as region
             var regionResults = client.GetResults(request);
 
             JsonResponse<Summary> response = new JsonResponse<Summary>();
@@ -66,20 +70,18 @@ namespace Top10Covid19.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetResultsByProvince(string isoCode)
+        public ActionResult JsonToXml(string data)
         {
-            TopTenRequest request = new TopTenRequest(settings.GetKey("protocolCovid19API"), settings.GetKey("hostCovid19API"),
-                                                      settings.GetKey("methodCovid19API"), settings.GetKey("ApiKeyCovid19API"));
-            request.TotalResults = 10;
-            request.IsoCode = isoCode;
-            var regionResults = client.GetResults(request);
+            XmlDocument doc = JsonConvert.DeserializeXmlNode(data,"root");
 
-            JsonResponse<Summary> response = new JsonResponse<Summary>();
+            var newStream = new System.IO.MemoryStream();
+            var writer = new System.IO.StreamWriter(newStream);
+            writer.Write(doc.OuterXml);
+            writer.Flush();
+            newStream.Position = 0;
 
-            response.data = regionResults.Summaries;
-            
-
-            return Json(response, JsonRequestBehavior.DenyGet);
+            return File(newStream, "application/xml", "file.xml");
         }
+
     }
 }
